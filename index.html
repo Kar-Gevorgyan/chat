@@ -7,16 +7,44 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js" integrity="sha256-OgiHfllOBEOiWQ2OcBsDncRG2k7QBW9Rs1dB7MH2N2s=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <title>Chatroom</title>
 </head>
 <body style="background-color: lightgray">
-    <div class="container mt-4">
+    <div class="col-12 p-0 d-none" id="navbar">
+        <nav class="navbar navbar-expand-lg" style="background-color: lightcyan">
+            <div class="col-2 text-center">
+                <a class="navbar-brand">Chatroom</a>
+            </div>
+            <div class="col-8"></div>
+            <div class="col-2">
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav text-black">
+                        <li class="nav-item dropdown">
+                            <button class="nav-link dropdown-toggle btn" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span id="userNickname"></span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <form class="logout_form m-0">
+                                    <input type="hidden" id="userId">
+                                    <input type="submit" class="dropdown-item btn" id="menu_btn_logout" value="Logout">
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container mt-3">
         <div class="row">
             <div class="col-8">
                 <div class="messages-list d-none" style="background-color: lightcyan; padding: 10px; border-radius: 5px">
-                    <h2>Mesasges</h2>
+                    <h2>Messages</h2>
                     <hr>
-                    <div style="height: 70vh; overflow: auto">
+                    <div style="height: 65vh; overflow: auto; display: flex; flex-direction: column-reverse">
                         <ul class="list-group">
                         </ul>
                     </div>
@@ -26,7 +54,7 @@
                 <div class="users-list d-none" style="background-color: lightcyan; padding: 10px;border-radius: 5px">
                     <h2>Users</h2>
                     <hr>
-                    <div style="height: 20vh; overflow: auto">
+                    <div style="min-height: 20vh;max-height: 40vh; overflow: auto">
                         <ul class="list-group"></ul>
                     </div>
                 </div>
@@ -35,15 +63,37 @@
         <div class="row">
             <div class="col-4"></div>
             <div class="col-4">
-                <div class="login-form-container">
-                    <form class="login-form">
-                        <div class="form-group" style="text-align: center">
-                            <label for="nickname">Nickname: </label>
-                            <input type="text" id="nickname">
-                            <p class="error-login"></p>
+                <div class="auth_container">
+                    <div class="card">
+                        <div class="card-header">
+                            <button class="btn w-20 border-dark" id="menu_btn_login">Login</button>
+                            <button class="btn w-20" id="menu_btn_register">Register</button>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
+                        <div class="card-body">
+                            <form class="login-form">
+                                <div class="form-group">
+                                    <label for="login_email">Email: </label>
+                                    <input type="email" id="login_email" class="form-control">
+                                    <label for="login_password">Password: </label>
+                                    <input type="password" id="login_password" class="form-control">
+                                    <p class="error-login text-danger"></p>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100">Login</button>
+                            </form>
+                            <form class="register-form d-none">
+                                <div class="form-group">
+                                    <label for="reg_nickname">Nickname: </label>
+                                    <input type="text" id="reg_nickname" class="form-control">
+                                    <label for="reg_email">Email: </label>
+                                    <input type="email" id="reg_email" class="form-control">
+                                    <label for="reg_password">Password: </label>
+                                    <input type="password" id="reg_password" class="form-control">
+                                    <p class="error-register text-danger"></p>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100">Register</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-4"></div>
