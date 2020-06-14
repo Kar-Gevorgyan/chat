@@ -49,12 +49,12 @@ io.on('connection', (socket)=>{
                 const dateOptions = {year: "numeric", month: "2-digit", day: "2-digit", hour: '2-digit', minute: '2-digit', hour12: false}
                 const date = message.date.toLocaleString('en-GB', dateOptions)
 
-                const author = await (await User.findById(message.author[0], 'nickname'))
+                const author = await User.findById(message.author[0], 'nickname')
                 
-                io.sockets.emit('all messages', {author: author.nickname, authorId: author._id, message: message.message, messageId: message._id, date})
+                io.sockets.emit('all messages', {authorId: author._id, author: author.nickname, message: message.message, messageId: message._id, date})
             }
 
-            const token = jwt.sign({ userId: user.id, nickname: user.nickname}, config.get('jwtPrivateKey'), { expiresIn: '1h'})
+            const token = jwt.sign({ userId: user.id, nickname: user.nickname}, config.get('jwtPrivateKey'))
     
             socket.token = token;
 
@@ -89,7 +89,7 @@ io.on('connection', (socket)=>{
                 return
             }
 
-            const token = jwt.sign({ userId: user.id, nickname: user.nickname}, config.get('jwtPrivateKey'), { expiresIn: '1h'})
+            const token = jwt.sign({ userId: user.id, nickname: user.nickname}, config.get('jwtPrivateKey'))
     
             socket.token = token;
 
@@ -104,7 +104,7 @@ io.on('connection', (socket)=>{
                 const dateOptions = {year: "numeric", month: "2-digit", day: "2-digit", hour: '2-digit', minute: '2-digit', hour12: false}
                 const date = message.date.toLocaleString('en-GB', dateOptions)
 
-                const author = await (await User.findById(message.author[0], 'nickname'))
+                const author = await User.findById(message.author[0], 'nickname')
                 
                 io.sockets.emit('all messages', {author: author.nickname, authorId: author._id, message: message.message, messageId: message._id, date})
             }
@@ -123,7 +123,7 @@ io.on('connection', (socket)=>{
         const user = await jwt.verify(token, config.get('jwtPrivateKey'))
         const message = new Message({
             message: data,
-            author: user.userID
+            author: user.userId
         })
         await message.save()
 
@@ -133,29 +133,28 @@ io.on('connection', (socket)=>{
         io.sockets.emit('message', {author: user.nickname, authorId: user._id, message: message.message, messageId: message._id, date})
     });
 
-    socket.on('logout', async (data)=>{
-        for (let i = 0; i < onlineUsers.length; i++){
-            if(String(onlineUsers[i]._id) === data.userId){
-                onlineUsers.splice(i, 1)
-            }
-        }
-        const users = await User.find().select('nickname')
-
-        io.sockets.emit('users', {users, onlineUsers})
+    socket.on('logout', ()=>{
+        logout()    
     })
 
-    socket.on('disconnect', async(data)=>{
-        const token = socket.token
-        const user = await jwt.verify(token, config.get('jwtPrivateKey'))
-        for (let i = 0; i < onlineUsers.length; i++){
-            if(String(onlineUsers[i]._id) === user.userId){
-                onlineUsers.splice(i, 1)
-            }
-        }
-        const users = await User.find().select('nickname')
-
-        io.sockets.emit('users', {users, onlineUsers})
+    socket.on('disconnect', ()=>{
+        logout()
     })
+
+    logout = async () => {
+        try {
+            const token = socket.token
+            const user = await jwt.verify(token, config.get('jwtPrivateKey'))
+            for (let i = 0; i < onlineUsers.length; i++){
+                if(String(onlineUsers[i]._id) === user.userId){
+                    onlineUsers.splice(i, 1)
+                }
+            }
+            const users = await User.find().select('nickname')
+
+            io.sockets.emit('users', {users, onlineUsers})
+        }catch{}
+    }
 });
 
 const PORT = config.get('port')

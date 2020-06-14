@@ -57,14 +57,16 @@ $(()=>{
             $('#reg_nickname').val('')
             $('#reg_email').val('')
             $('#reg_password').val('')
-            navbar.removeClass('d-none')
-            $('#userNickname').html(data.userNickname)  
-            $('#userId').val(data.userId)          
+            navbar.removeClass('d-none')        
             messageForm.removeClass('d-none');
             messagesList.removeClass('d-none');
             usersList.removeClass('d-none')
         }else{
+            errorRegister.show()
             errorRegister.html(data.message)
+            setTimeout(() => {
+                errorRegister.hide().html('')
+            }, 3000);
         }
     });
 
@@ -74,13 +76,15 @@ $(()=>{
             $('#login_email').val('')
             $('#login_password').val('')
             navbar.removeClass('d-none')
-            $('#userNickname').html(data.userNickname)
-            $('#userId').val(data.userId)
             messageForm.removeClass('d-none');
             messagesList.removeClass('d-none');
             usersList.removeClass('d-none')
         }else{
+            errorLogin.show()
             errorLogin.html(data.message)
+            setTimeout(() => {
+                errorLogin.hide().html('')
+            }, 3000);
         }
     });
 
@@ -127,13 +131,12 @@ $(()=>{
         )
     })
 
-    const logoutForm = $('.logout_form')
-    logoutForm.submit(e =>{
+    const logoutBtn = $('#menu_btn_logout')
+    logoutBtn.click(e =>{
         e.preventDefault();
-        socket.emit('logout', {userId: $('#userId').val()});
-        $('#userId').val('')
-        $('#userNickname').html('')
+        socket.emit('logout');
         $('.auth_container').removeClass('d-none');
+        loginBtn.click()
         navbar.addClass('d-none')
         messageForm.addClass('d-none');
         messagesList.addClass('d-none');
